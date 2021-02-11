@@ -5,8 +5,6 @@ from message import Message
 import pickle
 import threading
 
-# global entry, msgBox
-
 def sendMessage(entry, msgBox):
     mess = Message(
         userName, entry.get()

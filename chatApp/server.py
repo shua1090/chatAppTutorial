@@ -6,8 +6,6 @@ import pickle
 import threading
 import sys
 
-# global entry, msgBox
-
 def sendMessage():
     mess = Message(
         userName, entry.get()
@@ -65,15 +63,11 @@ if __name__ == "__main__":
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     port = 5000
-    if sys.argv[1] == "client":
-        print("Running Client")
-        sock.connect(('192.168.86.110', port))
-        conn = sock
-    else:
-        print("Running Server")
-        sock.bind(('', port))
-        sock.listen(1)
-        conn, addr = sock.accept()
+
+    print("Running Server")
+    sock.bind(('', port))
+    sock.listen(1)
+    conn, addr = sock.accept()
 
     print(conn)
 
