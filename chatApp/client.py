@@ -1,13 +1,13 @@
 import socket
 import tkinter as tk
-from tkinter.constants import END
+from tkinter.constants import DISABLED, END
 from message import Message
 import pickle
 import threading
 
-global entry, msgBox
+# global entry, msgBox
 
-def sendMessage():
+def sendMessage(entry, msgBox):
     mess = Message(
         userName, entry.get()
     )
@@ -22,9 +22,6 @@ def sendMessage():
     s.send(
         pickle.dumps(mess, protocol=3)
     )
-
-    print("Finished Sending Message")
-
 
 
 def receiveMessage():
@@ -50,15 +47,13 @@ def setupGUI():
     entry.place(relx=0.4, rely=0.9, anchor=tk.CENTER)
 
 
-    send = tk.Button(window, text="Send", font=("Arial", 10), command=sendMessage)
+    send = tk.Button(window, text="Send", font=("Arial", 10), command=lambda: sendMessage(entry, msgBox))
     send.place(relx=0.8, rely=0.9, anchor=tk.CENTER)
 
-    msgBox = tk.Text(window, width=35, height=10)#, text="Hello World")
+    msgBox = tk.Text(window, width=35, height=10, state=DISABLED)#, text="Hello World")
     msgBox.place(relx = 0.5, rely= 0.5, anchor="center")
 
     window.mainloop()
-
-
 
 if __name__ == "__main__":
 
