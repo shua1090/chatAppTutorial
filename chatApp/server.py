@@ -4,29 +4,31 @@ from tkinter.constants import DISABLED, END
 from message import Message
 import pickle
 import threading
+import sys
 
 # global entry, msgBox
 
-def sendMessage(entry, msgBox):
+def sendMessage():
     mess = Message(
         userName, entry.get()
     )
     
     msgBox.insert(
         END,
-        "\n"+"%s says %s"%(mess.sender, mess.text)
+        "\n"+"%s > %s"%(mess.sender, mess.text)
     )
 
     entry.delete(0, END)
     
-    c.send(
+
+    conn.send(
         pickle.dumps(mess, protocol=3)
     )
 
 
 def receiveMessage():
     while True:
-        receivedMessage = c.recv(512)
+        receivedMessage = conn.recv(512)
         receivedMessage = pickle.loads(receivedMessage)
         msgBox.insert(
             END,
@@ -47,7 +49,7 @@ def setupGUI():
     entry.place(relx=0.4, rely=0.9, anchor=tk.CENTER)
 
 
-    send = tk.Button(window, text="Send", font=("Arial", 10), command=lambda: sendMessage(entry, msgBox))
+    send = tk.Button(window, text="Send", font=("Arial", 10), command=sendMessage)
     send.place(relx=0.8, rely=0.9, anchor=tk.CENTER)
 
     msgBox = tk.Text(window, width=35, height=10, state=DISABLED)#, text="Hello World")
@@ -59,12 +61,20 @@ if __name__ == "__main__":
 
     userName = input("What is your username? ")
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    assert len(sys.argv) != 1
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     port = 5000
-    s.bind(('', port))
-    s.listen(1)
-    c, addr = s.accept()
-
-    threading.Thread(target=receiveMessage,).start()
-
+    if sys.argv[1] == "client":
+        print("Running Client")
+        sock.connect(('192.168.86.110', port))
+        conn = sock
+    else:
+        print("Running Server")
+        sock.bind(('', port))
+        sock.listen(1)
+        conn, addr = sock.accept()
+    t = threading.Thread(target=receiveMessage,)
+    t.start()
     setupGUI()
+    conn.close()
