@@ -74,6 +74,9 @@ if __name__ == "__main__":
         sock.bind(('', port))
         sock.listen(1)
         conn, addr = sock.accept()
+
+    print(conn)
+
     t = threading.Thread(target=receiveMessage,)
     t.start()
     setupGUI()
